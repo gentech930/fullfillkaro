@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+ <div class="container pb-5 mb-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <table class="table table-cart">
+                <thead>
+                    <tr>
+                        <th class="thumbnail-col">Images</th>
+                        <th class="product-col">Product</th>
+                        <th class="price-col">Price</th>
+                        <th class="qty-col">Quantity</th>
+                        <th class="text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+						{% for item in items %}
+						<tr class="product-row">
+							<td>
+								<figure class="product-image-container">
+									<a href="#" class="product-image">
+										<img src="{{ item.product.image1.url }}" height="60px" width="120px" alt="{{ item.product.name }}">
+									</a>
+									<a href="#" class="btn-remove icon-cancel update-cart" data-product="{{ item.product.id }}" data-action="remove" title="Remove Product"></a>
+								</figure>
+							</td>
+							<td class="product-col">
+								<h5 class="product-title">
+									<a href="#">{{ item.product.name }}</a>
+	
+								</h5>
+							</td>
+							<td class="price-col"></td>
+							<td>
+								<div class="input-group quantity">
+									<div class="input-group-prepend">
+										<button class="btn btn-outline-dark btn-quantity d-flex align-items-center justify-content-center" data-product="{{ item.product.id }}" data-action="decrease" style="max-width: 30px; height: 30px;">-</button>
+									</div>
+									<input type="text" class="form-control form-control-sm text-center quantity-input" value="{{ item.quantity }}" readonly style="max-width: 40px; height: 30px; padding: 0;">
+									<div class="input-group-append">
+										<button class="btn btn-outline-dark btn-quantity d-flex align-items-center justify-content-center" data-product="{{ item.product.price }}" data-action="increase" style="max-width: 30px; height: 30px;">+</button>
+									</div>
+								</div>
+							</td>
+							<td class="text-right subtotal-price">Rs:{{ order.get_total }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+                  
+            </table>
+        </div>
+
+        <div class="col-4">
+            <div class="cart-summary">
+                <h3>CART TOTALS</h3>
+                <table class="table table-totals">
+                    <tbody>
+                        <tr>
+                            <td>
+							<th><h5>Total:<strong> Rs:</strong></h5></th></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-left">
+                                <h4>Shipping</h4>
+                                <div class="form-group form-group-custom-control">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" class="custom-control-input" name="radio" checked>
+                                        <label class="custom-control-label">Local pickup</label>
+                                    </div>
+                                </div>
+                                <div class="form-group form-group-custom-control mb-0">
+                                    <div class="custom-control custom-radio mb-0">
+                                        <input type="radio" name="radio" class="custom-control-input">
+                                        <label class="custom-control-label">Flat rate</label>
+                                    </div>
+                                </div>
+                                <form action="#">
+                                    <div class="form-group form-group-sm">
+                                        <label>Shipping to <strong>NY.</strong></label>
+                                        <div class="select-custom">
+                                            <select class="form-control form-control-sm">
+                                                <option value="USA">United States (US)</option>
+                                                <option value="Turkey">Turkey</option>
+                                                <option value="China">China</option>
+                                                <option value="Germany">Germany</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-group-sm">
+                                        <div class="select-custom">
+                                            <select class="form-control form-control-sm">
+                                                <option value="NY">New York</option>
+                                                <option value="CA">California</option>
+                                                <option value="TX">Texas</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-group-sm">
+                                        <input type="text" class="form-control form-control-sm" placeholder="Town / City">
+                                    </div>
+                                    <div class="form-group form-group-sm">
+                                        <input type="text" class="form-control form-control-sm" placeholder="ZIP">
+                                    </div>
+                                    <button type="submit" class="btn btn-shop btn-update-total">
+                                        Update Totals
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Total</td>
+                            <td>Rs:17.90</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="checkout-methods">
+                    <a href="{% url 'checkout' %}" class="btn btn-block btn-dark">Proceed to Checkout
+                        <i class="fa fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<script>
+	document.querySelectorAll('.btn-quantity').forEach(button => {
+	button.addEventListener('click', function () {
+		const productId = this.getAttribute('data-product');
+		const action = this.getAttribute('data-action');
+		const quantityInput = this.closest('.input-group').querySelector('.quantity-input');
+		let currentQuantity = parseInt(quantityInput.value);
+
+		// Adjust quantity based on action
+		if (action === 'increase') {
+			currentQuantity += 1;
+		} else if (action === 'decrease' && currentQuantity > 1) {
+			currentQuantity -= 1;
+		}
+
+		// Update the quantity field
+		quantityInput.value = currentQuantity;
+
+		// Calculate and update subtotal
+		const pricePerUnit = parseFloat(this.closest('.product-row').querySelector('.price-col').textContent.replace('Rs:', ''));
+		const subtotalElement = this.closest('.product-row').querySelector('.subtotal-price');
+		subtotalElement.textContent = `Rs ${(pricePerUnit * currentQuantity).toFixed(2)}`;
+
+		// (Optional) Update the cart in the backend if necessary
+		// updateCartBackend(productId, currentQuantity);
+	});
+});
+
+</script>
+	</div><!-- End .page-wrapper -->
+	<div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
+	<div class="mobile-menu-container">
+		<div class="mobile-menu-wrapper">
+			<span class="mobile-menu-close"><i class="fa fa-times"></i></span>
+			<nav class="mobile-nav">
+				<ul class="mobile-menu">
+					<li><a href="demo4.html">Home</a></li>
+					<li>
+						<a href="category.html">Categories</a>
+						<ul>
+							<li><a href="category.html">Full Width Banner</a></li>
+							<li><a href="category-banner-boxed-slider.html">Boxed Slider Banner</a></li>
+							<li><a href="category-banner-boxed-image.html">Boxed Image Banner</a></li>
+							<li><a href="https://www.portotheme.com/html/porto_ecommerce/category-sidebar-left.html">Left Sidebar</a></li>
+							<li><a href="category-sidebar-right.html">Right Sidebar</a></li>
+							<li><a href="category-off-canvas.html">Off Canvas Filter</a></li>
+							<li><a href="category-horizontal-filter1.html">Horizontal Filter 1</a></li>
+							<li><a href="category-horizontal-filter2.html">Horizontal Filter 2</a></li>
+							<li><a href="#">List Types</a></li>
+							<li><a href="category-infinite-scroll.html">Ajax Infinite Scroll<span
+										class="tip tip-new">New</span></a></li>
+							<li><a href="category.html">3 Columns Products</a></li>
+							<li><a href="category-4col.html">4 Columns Products</a></li>
+							<li><a href="category-5col.html">5 Columns Products</a></li>
+							<li><a href="category-6col.html">6 Columns Products</a></li>
+							<li><a href="category-7col.html">7 Columns Products</a></li>
+							<li><a href="category-8col.html">8 Columns Products</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="product.html">Products</a>
+						<ul>
+							<li>
+								<a href="#" class="nolink">PRODUCT PAGES</a>
+								<ul>
+									<li><a href="product.html">SIMPLE PRODUCT</a></li>
+									<li><a href="product-variable.html">VARIABLE PRODUCT</a></li>
+									<li><a href="product.html">SALE PRODUCT</a></li>
+									<li><a href="product.html">FEATURED & ON SALE</a></li>
+									<li><a href="product-sticky-info.html">WIDTH CUSTOM TAB</a></li>
+									<li><a href="product-sidebar-left.html">WITH LEFT SIDEBAR</a></li>
+									<li><a href="product-sidebar-right.html">WITH RIGHT SIDEBAR</a></li>
+									<li><a href="product-addcart-sticky.html">ADD CART STICKY</a></li>
+								</ul>
+							</li>
+							<li>
+								<a href="#" class="nolink">PRODUCT LAYOUTS</a>
+								<ul>
+									<li><a href="product-extended-layout.html">EXTENDED LAYOUT</a></li>
+									<li><a href="product-grid-layout.html">GRID IMAGE</a></li>
+									<li><a href="product-full-width.html">FULL WIDTH LAYOUT</a></li>
+									<li><a href="product-sticky-info.html">STICKY INFO</a></li>
+									<li><a href="product-sticky-both.html">LEFT & RIGHT STICKY</a></li>
+									<li><a href="product-transparent-image.html">TRANSPARENT IMAGE</a></li>
+									<li><a href="product-center-vertical.html">CENTER VERTICAL</a></li>
+									<li><a href="#">BUILD YOUR OWN</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#">Pages<span class="tip tip-hot">Hot!</span></a>
+						<ul>
+							<li>
+								<a href="wishlist.html">Wishlist</a>
+							</li>
+							<li>
+								<a href="cart.html">Shopping Cart</a>
+							</li>
+							<li>
+								<a href="checkout.html">Checkout</a>
+							</li>
+							<li>
+								<a href="dashboard.html">Dashboard</a>
+							</li>
+							<li>
+								<a href="login.html">Login</a>
+							</li>
+							<li>
+								<a href="forgot-password.html">Forgot Password</a>
+							</li>
+						</ul>
+					</li>
+					                                <li><a href="blog.html">Blog</a></li>                                
+                                <li><a href="#">Elements</a>
+                        <ul class="custom-scrollbar">
+                            <li><a href="element-accordions.html">Accordion</a></li>
+                            <li><a href="element-alerts.html">Alerts</a></li>
+                            <li><a href="element-animations.html">Animations</a></li>
+                            <li><a href="element-banners.html">Banners</a></li>
+                            <li><a href="element-buttons.html">Buttons</a></li>
+                            <li><a href="element-call-to-action.html">Call to Action</a></li>
+                            <li><a href="element-countdown.html">Count Down</a></li>
+                            <li><a href="element-counters.html">Counters</a></li>
+                            <li><a href="element-headings.html">Headings</a></li>
+                            <li><a href="element-icons.html">Icons</a></li>
+                            <li><a href="element-info-box.html">Info box</a></li>
+                            <li><a href="element-posts.html">Posts</a></li>
+                            <li><a href="element-products.html">Products</a></li>
+                            <li><a href="element-product-categories.html">Product Categories</a></li>
+                            <li><a href="element-tabs.html">Tabs</a></li>
+                            <li><a href="element-testimonial.html">Testimonials</a></li>
+                        </ul>
+					</li>
+				</ul>
+
+				<ul class="mobile-menu mt-2 mb-2">
+					<li class="border-0">
+						<a href="#">
+							Special Offer!
+						</a>
+					</li>
+					<li class="border-0">
+						<a href="#" target="_blank">
+							Buy Porto!
+							<span class="tip tip-hot">Hot</span>
+						</a>
+					</li>
+				</ul>
+
+				<ul class="mobile-menu">
+					<li><a href="login.html">My Account</a></li>
+					<li><a href="contact.html">Contact Us</a></li>
+					<li><a href="blog.html">Blog</a></li>
+					<li><a href="wishlist.html">My Wishlist</a></li>
+					<li><a href="cart.html">Cart</a></li>
+					<li><a href="login.html" class="login-link">Log In</a></li>
+				</ul>
+			</nav><!-- End .mobile-nav -->
+
+			<form class="search-wrapper mb-2" action="#">
+				<input type="text" class="form-control mb-0" placeholder="Search..." required />
+				<button class="btn icon-search text-white bg-transparent p-0" type="submit"></button>
+			</form>
+
+			<div class="social-icons">
+				<a href="#" class="social-icon social-facebook icon-facebook" target="_blank">
+				</a>
+				<a href="#" class="social-icon social-twitter icon-twitter" target="_blank">
+				</a>
+				<a href="#" class="social-icon social-instagram icon-instagram" target="_blank">
+				</a>
+			</div>
+		</div><!-- End .mobile-menu-wrapper -->
+	</div><!-- End .mobile-menu-container -->
+
+	<div class="sticky-navbar">
+		<div class="sticky-info">
+			<a href="demo4.html">
+				<i class="icon-home"></i>Home
+			</a>
+		</div>
+		<div class="sticky-info">
+			<a href="category.html" class="">
+				<i class="icon-bars"></i>Categories
+			</a>
+		</div>
+		<div class="sticky-info">
+			<a href="wishlist.html" class="">
+				<i class="icon-wishlist-2"></i>Wishlist
+			</a>
+		</div>
+		<div class="sticky-info">
+			<a href="login.html" class="">
+				<i class="icon-user-2"></i>Account
+			</a>
+		</div>
+		<div class="sticky-info">
+			<a href="cart.html" class="">
+				<i class="icon-shopping-cart position-relative">
+					<span class="cart-count badge-circle">3</span>
+				</i>Cart
+			</a>
+		</div>
+	</div>
+
+
+
+	<a id="scroll-top" href="#top" title="Top" role="button"><i class="icon-angle-up"></i></a>
+
+{% endblock %}

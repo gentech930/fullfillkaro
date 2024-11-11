@@ -1,0 +1,17 @@
+{% extends "dbase.html" %}
+{% block title %}Edit Product{% endblock %}
+{% block body %}
+<div class="container mt-5" style="width: 70%; margin-left: 25%;">
+    <h2 class="text-center mt-4 mb-4"><b>Edit Product</b></h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- Renders all form fields -->
+        
+        <div class="text-right">
+            <button type="submit" class="btn btn-success">Update Product</button>
+            <a href="{% url 'product_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

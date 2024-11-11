@@ -1,0 +1,37 @@
+{% extends "dbase.html" %}
+{% block title %}Add Product{% endblock %}
+{% block body %}
+<div class="container mt-5" style="width: 70%; margin-left: 25%;">
+    <div class="card shadow-lg" style="border-radius: 10px;">
+        <h2 class="text-center mt-4 mb-4"><b>Add New Product</b></h2>
+        <div class="pform p-4">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}  <!-- Renders all form fields -->
+                
+                <div class="text-right">
+                    <button type="submit" class="btn btn-success">Add Product</button>
+                    <a href="{% url 'product_list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+
+            <h4 class="text-center mt-4"><b>Or</b></h4>
+
+            <!-- Excel Upload Form -->
+            <div class="eform p-4">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'upload_excel' %}">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <h4><b>Upload Excel File</b></h4>
+                        <input type="file" name="excel_file" accept=".xlsx, .xls" required />
+                    </div>
+                    <div class="card-footer text-right">
+                        <button type="submit" class="btn btn-success">Upload File</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

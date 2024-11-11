@@ -1,0 +1,53 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content%}
+
+
+
+<div class="container">
+    <h2>Categories</h2>
+    <div class="row">
+        {% for category in categories %}
+            <div class="col-3">
+                <button class="btn btn-link category-btn" data-category-id="{{ category.id }}">
+                    {{ category.name }}
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h2>Products</h2>
+    <div id="product-list" class="row">
+        {% for product in products %}
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">{{ product.price }}</p>
+                        <button class="btn btn-primary">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.category-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-category-id');
+
+            // Make an AJAX request to fetch products by category
+            fetch(`/products?category_id=${categoryId}`)
+                .then(response => response.text())
+                .then(data => {
+                    // Update the product list with the fetched data
+                    document.getElementById('product-list').innerHTML = data;
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        });
+    });
+</script>
+{% endblock %}
