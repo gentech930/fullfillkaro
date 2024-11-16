@@ -1,6 +1,54 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content%}
+
+<style>
+    .order-box {
+        border: 2px solid #00815f;
+        border-radius: 8px;
+        padding: 15px;
+        max-width: 400px;
+    }
+
+    .option-box {
+        border: 2px solid #ddd;
+        padding: 10px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+        cursor: pointer;
+    }
+
+    .option-box.selected {
+        background-color: #d5f5e3;
+        border-color: #7fa184;
+    }
+
+    .price-tag {
+        font-weight: bold;
+    }
+
+    .discount-text {
+        font-size: 0.8em;
+        color: #dc3545;
+        text-decoration: line-through;
+    }
+
+    .form-control,
+    .btn-buy {
+        margin-top: 10px;
+    }
+
+    .btn-buy {
+        background-color: #00815f;
+        color: white;
+        width: 100%;
+        font-weight: bold;
+    }
+</style>
+
 <div class="container my-5">
     <div class="row">
         <!-- Product Images Section -->
@@ -73,26 +121,67 @@
                     <button class="btn btn-outline-secondary">Medium</button>
                     <button class="btn btn-outline-secondary">Small</button>
                 </div>
-            {% endif %}
-            {% if product.bundles.all %}
-            <h4 class="mb-3">Choose Your Bundle</h4>
-            <table class="table">
-                <tbody>
-                    {% for bundle in product.bundles.all %}
-                    <tr>
-                        <td>
-                            <input type="radio" name="bundle" value="{{ bundle.price }}" onchange="updateTotal()">
-                        </td>
-                        <td>
-                            <div class="price-info">{{ bundle.name }}</div>
-                        </td>
-                        <td class="price">Rs {{ bundle.price }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
             {%endif%} 
-       
+            <div class="order-box">
+                <h5 class="text-center">Please fill in the form to order</h5>
+                <div class="option-box" onclick="selectOption('single', 1200, 0)">
+                    <div>
+                        <span>Single</span>
+                        <span class="badge bg-success ms-2">Popular</span>
+                    </div>
+                    <span class="price-tag">Rs.1,200.00</span>
+                </div>
+                <div class="option-box" onclick="selectOption('setOf2', 2100, 701)">
+                    <div>
+                        <span>Set of 2</span>
+                        <span class="badge bg-info ms-2">Discounted</span>
+                    </div>
+                    <div>
+                        <span class="original-price text-muted">Rs.2,100.00</span>
+                        <span class="price-tag ms-2 text-danger">Rs.1,699.00</span>
+                    </div>
+                </div>
+                <div id="price-summary" style="display: none;">
+                    <div class="d-flex justify-content-between">
+                        <span>Subtotal</span>
+                        <span id="subtotal" class="fw-bold">Rs.0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between" id="discount-section" style="display: none;">
+                        <span>Discount</span>
+                        <span id="discount" class="text-success">Rs.0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total</strong>
+                        <strong id="total" class="fw-bold">Rs.0.00</strong>
+                    </div>
+                </div>
+                
+                <form>
+                    <input type="text" class="form-control" placeholder="Name" required>
+                    <input type="tel" class="form-control " placeholder="Phone" required>
+                    <input type="text" class="form-control " placeholder="Address" required>
+                    <input type="text" class="form-control " placeholder="City" required>
+                    <button type="button" class="btn btn-buy">BUY NOW</button>
+                </form>
+            </div>
+            <script>
+                function selectOption(type, subtotal, discount) {
+                    document.getElementById('price-summary').style.display = 'block';
+                    document.querySelectorAll('.option-box').forEach(box => {
+                        box.classList.remove('selected');
+                    });
+                    const selectedBox = type === 'single' ? document.querySelectorAll('.option-box')[0] : document.querySelectorAll('.option-box')[1];
+                    selectedBox.classList.add('selected');
+                    document.getElementById('subtotal').textContent = 'Rs.' + subtotal.toFixed(2);
+                    document.getElementById('total').textContent = 'Rs.' + (subtotal - discount).toFixed(2);
+                    if (type === 'setOf2') {
+                        document.getElementById('discount').textContent = '-Rs.' + discount.toFixed(2);
+                        document.getElementById('discount-section').style.display = 'flex';
+                    } else {
+                        document.getElementById('discount-section').style.display = 'none';
+                    }
+                }
+            </script>
         <!-- Total Price Display -->
         <div id="total-div" class="mb-4">
             <h4>Total Price: <span id="total" >Rs. {{ product.price }}</span></h4>

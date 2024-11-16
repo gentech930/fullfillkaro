@@ -1,10 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from decimal import Decimal
-
-
-
-
+from django import forms
 
 class Product(models.Model):
     COLOR_CHOICES = [
@@ -111,10 +108,6 @@ class Customer(models.Model):
 	def __str__(self):
 		return self.name
 
-
-
-
-
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
@@ -156,6 +149,11 @@ class OrderItem(models.Model):
         print("total price: ",total)
         return total
 
+class OrderForm(forms.Form):
+    name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}))
+    phone = forms.CharField(max_length=15, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}))
+    address = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Address'}))
+    city = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'City'}))
 
 
 class ShippingAddress(models.Model):

@@ -8,19 +8,18 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import json
-from django.contrib.auth.forms import UserCreationForm
 import pandas as pd
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from .forms import RegistrationForm
-from .models import Customer  # Import your Customer model
-
-
-
-
-
+from .models import Customer
 from .models import Product, Category, Cart, CartItem, Bundle, OrderItem
 from .forms import ProductForm
 from app.models import Order
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import CartItem, Product  # Make sure CartItem model and Product model are correctly imported
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 def web(request):
     return render(request, 'web.html')
 
@@ -138,12 +137,6 @@ def shop_view(request, category_slug=None):
     }
     return render(request, 'shop.html', context)
 
-# Cart and Order Views
-# @login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import CartItem, Product  # Make sure CartItem model and Product model are correctly imported
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 
 @login_required
 def cart_view(request):
@@ -187,6 +180,7 @@ def add_to_cart(request, product_id):
     cart_item.quantity += 1
     cart_item.save()
     return redirect('cart')
+
 
 def updateItem(request):
     data = json.loads(request.body)
